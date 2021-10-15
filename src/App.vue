@@ -1,161 +1,67 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
+import moment from 'moment';
 
-export default defineComponent(() => {
-  return {
-    hoge: 'ohohohohohoh',
-  };
+export default defineComponent({
+  setup() {
+    const cellCount = 42 as const;
+    const week = ['日', '月', '火', '水', '木', '金', '土'] as const;
+    const todayDate = ref(moment());
+
+    const addMonth = () => {
+      todayDate.value = moment(todayDate.value).add(1, 'month');
+    };
+
+    const removeMonth = () => {
+      todayDate.value = moment(todayDate.value).subtract(1, 'month');
+    };
+
+    const displayDates = computed(() => {
+      return [...Array(cellCount)].map((_, index) => {
+        const firstDatMonth = moment(todayDate.value).startOf('month');
+        // target = 1番目に表示する日にちを取得する（前の月を跨ぐ）
+        const target = firstDatMonth.subtract(firstDatMonth.day(), 'day');
+        // newTarget = 1番目に表示する日にちから index日分プラスした日にちを取得する
+        const newTarget = target.add(index, 'day');
+        const isThisMonth = moment(newTarget).format('YYYYMM') === moment(todayDate.value).format('YYYYMM');
+        const isToday = moment(newTarget).format('YYYYMMDD') === moment().format('YYYYMMDD');
+        return { month: newTarget.month() + 1, day: newTarget.date(), isThisMonth, isToday };
+      });
+    });
+
+    return {
+      week,
+      todayDate,
+      displayDates,
+      addMonth,
+      removeMonth,
+    };
+  },
 });
 </script>
 
 <template>
   <div :class="$style.wrap">
     <header :class="$style.header">
-      <button type="button" :class="[$style.header__pagenationButton, $style.header__prevButton]">＜</button>
-      <p :class="$style.header__currentYearAndMonth">2021 / 9</p>
-      <button type="button" :class="[$style.header__pagenationButton, $style.header__nextButton]">＞</button>
+      <button type="button" :class="[$style.header__pagenationButton, $style.header__prevButton]" @click="removeMonth">
+        ＜
+      </button>
+      <p :class="$style.header__currentYearAndMonth">{{ todayDate.year() }} / {{ todayDate.month() + 1 }}</p>
+      <button type="button" :class="[$style.header__pagenationButton, $style.header__nextButton]" @click="addMonth">
+        ＞
+      </button>
     </header>
     <main>
       <div :class="$style.weekDayWrap">
-        <p :class="$style.weekDayCell">日</p>
-        <p :class="$style.weekDayCell">月</p>
-        <p :class="$style.weekDayCell">火</p>
-        <p :class="$style.weekDayCell">水</p>
-        <p :class="$style.weekDayCell">木</p>
-        <p :class="$style.weekDayCell">金</p>
-        <p :class="$style.weekDayCell">土</p>
+        <p v-for="weekItem in week" :key="weekItem" :class="$style.weekDayCell">{{ weekItem }}</p>
       </div>
       <div :class="$style.dayWrap">
-        <div :class="[$style.dayCell, $style['dayCell--otherMonth']]">
-          <p :class="$style.dayCell__day">29</p>
-        </div>
-        <div :class="[$style.dayCell, $style['dayCell--otherMonth']]">
-          <p :class="$style.dayCell__day">30</p>
-        </div>
-        <div :class="[$style.dayCell, $style['dayCell--otherMonth']]">
-          <p :class="$style.dayCell__day">31</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">1</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">2</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">3</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">4</p>
-        </div>
-
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">5</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">6</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">7</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">8</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">9</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">10</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">11</p>
-        </div>
-
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">12</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">13</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">14</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">15</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">16</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">17</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">18</p>
-        </div>
-
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">19</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">20</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">21</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">22</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">23</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">24</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">25</p>
-        </div>
-
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">26</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">27</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="[$style.dayCell__day, $style['dayCell__day--today']]">28</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">29</p>
-        </div>
-        <div :class="$style.dayCell">
-          <p :class="$style.dayCell__day">30</p>
-        </div>
-        <div :class="[$style.dayCell, $style['dayCell--otherMonth']]">
-          <p :class="$style.dayCell__day">1</p>
-        </div>
-        <div :class="[$style.dayCell, $style['dayCell--otherMonth']]">
-          <p :class="$style.dayCell__day">2</p>
-        </div>
-
-        <div :class="[$style.dayCell, $style['dayCell--otherMonth']]">
-          <p :class="$style.dayCell__day">3</p>
-        </div>
-        <div :class="[$style.dayCell, $style['dayCell--otherMonth']]">
-          <p :class="$style.dayCell__day">4</p>
-        </div>
-        <div :class="[$style.dayCell, $style['dayCell--otherMonth']]">
-          <p :class="$style.dayCell__day">5</p>
-        </div>
-        <div :class="[$style.dayCell, $style['dayCell--otherMonth']]">
-          <p :class="$style.dayCell__day">6</p>
-        </div>
-        <div :class="[$style.dayCell, $style['dayCell--otherMonth']]">
-          <p :class="$style.dayCell__day">7</p>
-        </div>
-        <div :class="[$style.dayCell, $style['dayCell--otherMonth']]">
-          <p :class="$style.dayCell__day">8</p>
-        </div>
-        <div :class="[$style.dayCell, $style['dayCell--otherMonth']]">
-          <p :class="$style.dayCell__day">9</p>
+        <div
+          v-for="date in displayDates"
+          :key="date"
+          :class="[$style.dayCell, !date.isThisMonth && $style['dayCell--otherMonth']]"
+        >
+          <p :class="[$style.dayCell__day, date.isToday && $style['dayCell__day--today']]">{{ date.day }}</p>
         </div>
       </div>
     </main>
@@ -164,22 +70,22 @@ export default defineComponent(() => {
 
 <style lang="scss" module>
 .wrap {
-  font-size: 14px;
   color: #161616;
+  font-size: 14px;
 }
 
 .header {
+  align-items: center;
+  background-color: #000;
   display: flex;
   justify-content: center;
-  align-items: center;
   padding: 20px 0;
-  background-color: #000;
 }
 
 .header__currentYearAndMonth {
-  margin: 0 20px;
-  font-size: 24px;
   color: #f3f3f3;
+  font-size: 24px;
+  margin: 0 20px;
 }
 
 .header__pagenationButton {
@@ -194,12 +100,14 @@ export default defineComponent(() => {
 }
 
 .weekDayCell {
+  background-color: #585858;
   border-color: #dadce0;
   border-style: solid;
   border-width: 0 1px 1px 0;
+  color: #fff;
   padding: 2px 0;
-  width: calc((100vw - 1px) / 7);
   text-align: center;
+  width: calc((100vw - 1px) / 7);
 }
 
 .dayWrap {
@@ -215,8 +123,8 @@ export default defineComponent(() => {
   border-color: #dadce0;
   border-style: solid;
   border-width: 0 1px 1px 0;
-  width: calc((100vw - 1px) / 7);
   padding: 10px;
+  width: calc((100vw - 1px) / 7);
 }
 
 .dayCell--otherMonth {
@@ -224,10 +132,10 @@ export default defineComponent(() => {
 }
 
 .dayCell__day {
-  text-align: center;
-  width: 24px;
   height: 24px;
   line-height: 24px;
+  text-align: center;
+  width: 24px;
 }
 
 .dayCell__day--today {
